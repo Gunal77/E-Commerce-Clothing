@@ -17,9 +17,14 @@ export default function HomePage() {
         const list = Array.isArray(data) ? data : []
         // Pick top 5 as "Trending"
         setProducts(list.slice(0, 5))
+        setError('')
       } catch (e) {
         console.error('Failed to load products', e)
-        setError('Unable to load products from the server.')
+        if (e.code === 'ECONNREFUSED' || e.message?.includes('Network Error')) {
+          setError('Cannot connect to backend server. Please ensure the backend is running on port 5000.')
+        } else {
+          setError('Unable to load products from the server.')
+        }
       } finally {
         setLoading(false)
       }
@@ -30,11 +35,21 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="max-w-lg mx-auto text-center space-y-2">
-        <div className="text-red-600 font-medium">{error}</div>
-        <p className="text-sm text-gray-600">Ensure the backend is running and has products.</p>
-        <div className="text-xs text-gray-500 break-all">Check: http://localhost:5000/api/products</div>
-      </div>
+      <>
+        <Hero />
+        <CategoryGrid />
+        <div className="max-w-lg mx-auto text-center space-y-4 p-8 border rounded-lg bg-red-50 dark:bg-red-900/20">
+          <div className="text-red-600 font-medium text-lg">{error}</div>
+          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <p>To fix this:</p>
+            <ol className="list-decimal list-inside space-y-1 text-left max-w-md mx-auto">
+              <li>Start the backend: <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">cd backend && npm run dev</code></li>
+              <li>Seed products: <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">npm run seed:products</code></li>
+              <li>Verify: <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">curl http://localhost:5000/api/products</code></li>
+            </ol>
+          </div>
+        </div>
+      </>
     )
   }
 

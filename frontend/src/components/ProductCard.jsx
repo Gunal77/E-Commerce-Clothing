@@ -2,13 +2,19 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useState } from 'react'
 import { useToast } from '../context/ToastContext'
+import { motion } from 'framer-motion'
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart()
   const [flash, setFlash] = useState(false)
   const { push } = useToast()
   return (
-    <div className={`group border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition ${flash ? 'ring-2 ring-emerald-500' : ''}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      className={`group border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition ${flash ? 'ring-2 ring-emerald-500' : ''}`}
+    >
       <div className="relative">
         <img
           src={product.imageUrl || 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop'}
@@ -40,7 +46,7 @@ export default function ProductCard({ product }) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
